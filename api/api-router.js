@@ -50,7 +50,7 @@ function validate(req, res, next) {
     // console.log(req.headers)
     console.log({name})
 
-    db.findBy(name)
+    db.findBy({name})
       .then(user => {
         if (user && bcrypt.compareSync(password, user.password)) {
           next();
