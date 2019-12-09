@@ -46,7 +46,7 @@ function validate(req, res, next) {
   const { name, password } = req.headers;
 
   if (name && password) {
-    // console.log(name)
+    console.log(name)
     // console.log(req.headers)
     console.log({name})
 
