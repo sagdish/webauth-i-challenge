@@ -34,31 +34,36 @@ router.post('/login', (req, res) => {
   db.findBy({name})
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
-        res.status(200).json({ message: `Wwwelcome ${user.name}`})
+        if (req.session) {
+          req.session.user = user;
+        }
+        res.status(200).json({ message: `Wwwelcome ${user.name}! Have a cookie`})
       } else {
         res.status(401).json({ message: 'you shall not pass!'})
       }
     })
     .catch(err => res.status(500).json({error: err}))
-})
+});
+
+router.delete('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.status(400).send('unable to exit')
+      } else {
+        res.send('Good bye...')
+      }
+    })
+  } else {
+    res.end();
+  }
+});
 
 function validate(req, res, next) {
-  const { name, password } = req.headers;
-
-  if (name && password) {
-    console.log(name)
-    // console.log(req.headers)
-    console.log({name})
-
-    db.findBy({name})
-      .then(user => {
-        if (user && bcrypt.compareSync(password, user.password)) {
-          next();
-        } else {
-          res.status(401).json({message: 'invalid credentials'})
-        }
-      })
-      .catch(err => res.status(500).json({ error: err }));
+  // console.log(req.session);
+  if (req.session && req.session.user) {
+    // console.log(req.session.user)
+    next();
   } else {
     res.status(401).json({ message: 'no credentials provided'});
   }
