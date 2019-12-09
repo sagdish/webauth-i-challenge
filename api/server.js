@@ -1,5 +1,6 @@
 const express = require('express');
 const session = require('express-session');
+const knexSessionStore = require('connect-session-knex')(session);
 
 const apiRouter = require('./api-router.js');
 const configMiddleware = require('./config-middleware.js');
@@ -18,6 +19,13 @@ const sessionOptions = {
   },
   resave: false,
   saveUninitialized: false,
+  store: new knexSessionStore({
+    knex: require('../database/dbConfig'),
+    tablename: 'sessions',
+    sidfieldname: 'sid',
+    createtable: true,
+    clearInterval: 1000 * 60 * 60,
+  })
 }
 
 server.use(session(sessionOptions));

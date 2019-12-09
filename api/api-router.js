@@ -35,7 +35,7 @@ router.post('/login', (req, res) => {
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
         if (req.session) {
-          req.session.user = user;
+          req.session.isLogged = true;
         }
         res.status(200).json({ message: `Wwwelcome ${user.name}! Have a cookie`})
       } else {
@@ -60,8 +60,8 @@ router.delete('/logout', (req, res) => {
 });
 
 function validate(req, res, next) {
-  // console.log(req.session);
-  if (req.session && req.session.user) {
+  console.log(req.session);
+  if (req.session && req.session.isLogged) {
     // console.log(req.session.user)
     next();
   } else {
